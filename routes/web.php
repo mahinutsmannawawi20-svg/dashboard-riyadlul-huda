@@ -46,8 +46,10 @@ Route::get('/', function () {
     };
 });
 
-// Database Backup Route
-Route::get('/backup/download', [App\Http\Controllers\BackupController::class, 'download'])->name('backup.download');
+// Database Backup Route (PROTECTED - Admin only)
+Route::get('/backup/download', [App\Http\Controllers\BackupController::class, 'download'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('backup.download');
 
 // Notification Routes (API for all authenticated users)
 Route::middleware(['auth'])->prefix('api')->group(function () {

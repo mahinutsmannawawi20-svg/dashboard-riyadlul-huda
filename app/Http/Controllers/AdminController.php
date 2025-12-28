@@ -54,7 +54,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin_pusat,sekretaris,bendahara,pendidikan',
+            'role' => 'required|in:admin,sekretaris,bendahara,pendidikan',
         ]);
 
         if ($validator->fails()) {
@@ -82,7 +82,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:6',
-            'role' => 'required|in:admin_pusat,sekretaris,bendahara,pendidikan',
+            'role' => 'required|in:admin,sekretaris,bendahara,pendidikan',
         ]);
 
         if ($validator->fails()) {
