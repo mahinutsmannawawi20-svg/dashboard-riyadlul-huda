@@ -106,6 +106,17 @@ class MidtransController extends Controller
     }
 
     /**
+     * Bulk Reset VA (Clear All VA Numbers)
+     */
+    public function resetVaBulk(Request $request)
+    {
+        // Update all santri set va to null
+        Santri::query()->update(['virtual_account_number' => null]);
+        
+        return back()->with('success', 'Semua Virtual Account berhasil di-reset (dihapus). Silakan generate ulang massal jika diperlukan.');
+    }
+
+    /**
      * Handle incoming Webhook from Midtrans
      */
     public function webhook(Request $request)

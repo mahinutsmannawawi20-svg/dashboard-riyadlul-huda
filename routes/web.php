@@ -291,6 +291,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/santri/{santri}/generate-va', [App\Http\Controllers\MidtransController::class, 'generateVa'])->name('santri.generate-va');
     Route::post('/santri/{santri}/reset-va', [App\Http\Controllers\MidtransController::class, 'resetVa'])->name('santri.reset-va');
     Route::post('/santri/generate-va-bulk', [App\Http\Controllers\MidtransController::class, 'generateVaBulk'])->name('santri.generate-va-bulk');
+    Route::post('/santri/reset-va-bulk', [App\Http\Controllers\MidtransController::class, 'resetVaBulk'])->name('santri.reset-va-bulk');
 });
 
 Route::post('/midtrans/webhook', [App\Http\Controllers\MidtransController::class, 'webhook'])->name('midtrans.webhook');

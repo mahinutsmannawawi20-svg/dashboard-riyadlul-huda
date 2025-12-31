@@ -133,6 +133,14 @@
                     <i data-feather="zap" style="width: 18px; height: 18px;"></i>
                     Generate VA Massal
                 </button>
+
+                <button onclick="if(confirm('⚠️ PERINGATAN: Aksi ini akan MENGHAPUS SEMUA Virtual Account santri yang ada. Santri harus di-generate ulang VA-nya untuk bisa membayar. Yakin ingin melanjutkan?')) document.getElementById('form-reset-va-bulk').submit()" 
+                    style="display: inline-flex; align-items: center; gap: 8px; background: rgba(239, 68, 68, 0.25); color: #fee2e2; padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; border: 1px solid rgba(239, 68, 68, 0.4); cursor: pointer; backdrop-filter: blur(10px); transition: background 0.2s;" 
+                    onmouseover="this.style.background='rgba(239, 68, 68, 0.35)';" 
+                    onmouseout="this.style.background='rgba(239, 68, 68, 0.25)';">
+                    <i data-feather="refresh-cw" style="width: 18px; height: 18px;"></i>
+                    Reset VA Massal
+                </button>
                 
                 <a href="{{ route('sekretaris.data-santri.create') }}" style="display: inline-flex; align-items: center; gap: 8px; background: white; color: #667eea; padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';">
                     <i data-feather="user-plus" style="width: 18px; height: 18px;"></i>
@@ -141,6 +149,9 @@
             </div>
             
             <form id="form-generate-va-bulk" action="{{ route('santri.generate-va-bulk') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+            <form id="form-reset-va-bulk" action="{{ route('santri.reset-va-bulk') }}" method="POST" style="display: none;">
                 @csrf
             </form>
         </div>
