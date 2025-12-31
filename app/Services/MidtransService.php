@@ -104,6 +104,7 @@ class MidtransService
         }
 
         // Send Request
+        /** @var \Illuminate\Http\Client\Response $response */
         $response = Http::withBasicAuth($this->serverKey, '')
             ->withHeaders(['Content-Type' => 'application/json'])
             ->post($this->baseUrl . '/charge', $params);

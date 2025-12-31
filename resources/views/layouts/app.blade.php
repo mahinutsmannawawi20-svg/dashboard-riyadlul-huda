@@ -676,6 +676,9 @@
         document.addEventListener('DOMContentLoaded', fetchNotifications);
     </script>
     
+    <!-- Developer Profile Component -->
+    @include('components.developer-profile')
+    
     <!-- Help/FAQ Component -->
     @include('components.help-faq')
 </body>

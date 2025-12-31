@@ -32,7 +32,7 @@ class KartuDigitalController extends Controller
                         ->paginate(20);
 
         // Get lists for filters (borrowed logic from SekretarisController if needed, or simple query)
-        $kelasList = \App\Models\Kelas::all();
+        $kelasList = Kelas::all();
         
         return view('sekretaris.kartu-digital.index', compact('santris', 'kelasList'));
     }
