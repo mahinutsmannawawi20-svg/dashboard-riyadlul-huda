@@ -244,6 +244,15 @@ class MidtransController extends Controller
 
             $this->telegramService->sendMessage($message);
 
+            // WA NOTIFICATION via Fonnte
+            if ($santri->no_hp_ortu_wali) {
+                $this->fonnteService->notifyDepositSuccess(
+                    $santri->no_hp_ortu_wali, 
+                    $santri->nama_santri, 
+                    $amount
+                );
+            }
+
             Log::info("Payment Received for Santri $nis but NO Arrears found. Notification sent.");
         }
     }

@@ -71,6 +71,23 @@ class FonnteService
 
         return $this->sendMessage($targetPhone, $message);
     }
+
+    /**
+     * Send deposit notification to parent
+     */
+    public function notifyDepositSuccess($targetPhone, $santriName, $amount)
+    {
+        $formattedAmount = number_format($amount, 0, ',', '.');
+        
+        $message = "*PEMBAYARAN DITERIMA (DEPOSIT)* 💰\n\n";
+        $message .= "Pembayaran diterima kami simpan sebagai saldo/deposit (karena tidak ada tagihan tertunggak):\n\n";
+        $message .= "👤 Nama: $santriName\n";
+        $message .= "💰 Nominal: Rp $formattedAmount\n";
+        $message .= "✓ Status: TERSIMPAN\n\n";
+        $message .= "_Pesan otomatis dari Sistem Informasi Riyadlul Huda_";
+
+        return $this->sendMessage($targetPhone, $message);
+    }
     
     /**
      * Send generic notification
