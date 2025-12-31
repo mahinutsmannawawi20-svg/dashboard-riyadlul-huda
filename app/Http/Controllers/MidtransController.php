@@ -52,6 +52,15 @@ class MidtransController extends Controller
     }
 
     /**
+     * Reset VA (Clear VA Number) for a Santri
+     */
+    public function resetVa(Request $request, Santri $santri)
+    {
+        $santri->update(['virtual_account_number' => null]);
+        return back()->with('success', 'Virtual Account berhasil di-reset. Silakan generate ulang untuk transaksi baru.');
+    }
+
+    /**
      * Bulk Generate VA for all Santri without VA
      */
     public function generateVaBulk(Request $request)

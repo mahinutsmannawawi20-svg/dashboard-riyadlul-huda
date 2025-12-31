@@ -1,9 +1,17 @@
 
 <style>
-    .dev-profile-btn {
+    .dev-profile-container {
         position: fixed;
-        bottom: 100px;
+        bottom: 20px;
         right: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        z-index: 999;
+    }
+    
+    .dev-profile-btn {
         width: 50px;
         height: 50px;
         border-radius: 50%;
@@ -14,7 +22,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 1000;
         transition: all 0.3s ease;
     }
     
@@ -27,6 +34,18 @@
         width: 24px;
         height: 24px;
         color: white;
+    }
+    
+    .dev-profile-label {
+        font-size: 0.7rem;
+        color: #6366f1;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+        background: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     
     .dev-modal-overlay {
@@ -217,11 +236,18 @@
     }
     
     @media (max-width: 768px) {
-        .dev-profile-btn {
-            bottom: 80px;
+        .dev-profile-container {
+            bottom: 15px;
             right: 15px;
+        }
+        
+        .dev-profile-btn {
             width: 45px;
             height: 45px;
+        }
+        
+        .dev-profile-label {
+            font-size: 0.65rem;
         }
         
         .dev-modal {
@@ -236,12 +262,15 @@
 </style>
 
 
-<button class="dev-profile-btn" onclick="openDevModal()" title="Developer Profile">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-    </svg>
-</button>
+<div class="dev-profile-container">
+    <button class="dev-profile-btn" onclick="openDevModal()" title="Hubungi Admin">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+    </button>
+    <span class="dev-profile-label">Hubungi Admin</span>
+</div>
 
 
 <div class="dev-modal-overlay" id="devModalOverlay" onclick="closeDevModal(event)">

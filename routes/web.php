@@ -280,6 +280,7 @@ Route::middleware(['auth', 'role:sekretaris'])->prefix('sekretaris')->name('sekr
 // Midtrans Routes
 Route::middleware('auth')->group(function () {
     Route::post('/santri/{santri}/generate-va', [App\Http\Controllers\MidtransController::class, 'generateVa'])->name('santri.generate-va');
+    Route::post('/santri/{santri}/reset-va', [App\Http\Controllers\MidtransController::class, 'resetVa'])->name('santri.reset-va');
     Route::post('/santri/generate-va-bulk', [App\Http\Controllers\MidtransController::class, 'generateVaBulk'])->name('santri.generate-va-bulk');
 });
 

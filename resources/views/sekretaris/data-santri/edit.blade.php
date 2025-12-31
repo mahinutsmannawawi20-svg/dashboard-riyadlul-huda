@@ -105,9 +105,16 @@
                                 Generate VA
                             </button>
                         @else
-                            <span class="badge" style="background-color: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 99px; font-weight: 600; font-size: 0.875rem;">
-                                Aktif
-                            </span>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <span class="badge" style="background-color: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 99px; font-weight: 600; font-size: 0.875rem;">
+                                    Aktif
+                                </span>
+                                <button type="button" onclick="if(confirm('Yakin ingin mereset VA? Santri harus generate ulang untuk bisa bayar.')) document.getElementById('form-reset-va').submit()" 
+                                    class="btn" style="background-color: #ef4444; color: white; padding: 4px 12px; font-size: 0.75rem;">
+                                    <i data-feather="refresh-cw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                                    Reset
+                                </button>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -246,8 +253,10 @@
     <form id="form-generate-va" action="{{ route('santri.generate-va', $santri->id) }}" method="POST" style="display: none;">
         @csrf
     </form>
+    <form id="form-reset-va" action="{{ route('santri.reset-va', $santri->id) }}" method="POST" style="display: none;">
+        @csrf
+    </form>
 @endsection
-
 @push('scripts')
 <script>
 document.getElementById('asrama_id').addEventListener('change', function() {
