@@ -6,16 +6,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Riyadlul Huda</title>
     
-    <!-- PWA Meta Tags -->
-    <meta name="description" content="Sistem Manajemen Pondok Pesantren Riyadlul Huda - Dashboard untuk Sekretaris, Bendahara, dan Pendidikan">
-    <meta name="theme-color" content="#3b82f6">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Riyadlul Huda">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-yayasan.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-yayasan.png') }}">
-    
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/design-system.css') }}">
     <link rel="stylesheet" href="{{ asset('css/navigation.css') }}">
@@ -544,16 +534,7 @@
         });
     </script>
     
-    <!-- PWA Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('✅ Service Worker registered:', reg.scope))
-                    .catch(err => console.log('❌ Service Worker registration failed:', err));
-            });
-        }
-    </script>
+
     
     <!-- Global Bottom Navigation (Auto-detect context) -->
     @php
@@ -682,20 +663,7 @@
     <!-- Help/FAQ Component -->
     @include('components.help-faq')
     
-    <!-- Service Worker Registration for PWA Offline Support -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('[PWA] Service Worker registered:', registration.scope);
-                    })
-                    .catch((error) => {
-                        console.log('[PWA] Service Worker registration failed:', error);
-                    });
-            });
-        }
-    </script>
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
