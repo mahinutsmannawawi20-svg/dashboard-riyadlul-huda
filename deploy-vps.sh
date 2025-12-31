@@ -129,8 +129,9 @@ chmod -R 755 /var/www/dashboard-riyadlul-huda
 chmod -R 775 storage bootstrap/cache
 
 # ===== 13. CREATE NGINX CONFIG =====
-echo "📝 Creating Nginx config..."
-cat > /etc/nginx/sites-available/dashboard-riyadlul-huda << EOF
+if [ ! -f /etc/nginx/sites-available/dashboard-riyadlul-huda ]; then
+    echo "📝 Creating Nginx config..."
+    cat > /etc/nginx/sites-available/dashboard-riyadlul-huda << EOF
 server {
     listen 80;
     server_name $DOMAIN;
@@ -179,6 +180,13 @@ server {
     }
 }
 EOF
+
+    ln -sf /etc/nginx/sites-available/dashboard-riyadlul-huda /etc/nginx/sites-enabled/
+    rm -f /etc/nginx/sites-enabled/default
+    nginx -t && systemctl reload nginx
+else
+    echo "⚠️ Nginx config already exists. Skipping overwrite to preserve SSL."
+fi
 
 ln -sf /etc/nginx/sites-available/dashboard-riyadlul-huda /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
