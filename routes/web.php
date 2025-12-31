@@ -51,6 +51,19 @@ Route::get('/backup/download', [App\Http\Controllers\BackupController::class, 'd
     ->middleware(['auth', 'role:admin'])
     ->name('backup.download');
 
+// Activity Log Route (Admin only)
+Route::get('/admin/activity-log', [App\Http\Controllers\ActivityLogController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.activity-log');
+
+// Admin Dashboard & User Management Routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\BackupController::class, 'dashboard'])->name('dashboard');
+    Route::post('/user', [App\Http\Controllers\BackupController::class, 'storeUser'])->name('user.store');
+    Route::put('/user/{user}', [App\Http\Controllers\BackupController::class, 'updateUser'])->name('user.update');
+    Route::delete('/user/{user}', [App\Http\Controllers\BackupController::class, 'destroyUser'])->name('user.destroy');
+});
+
 // Notification Routes (API for all authenticated users)
 Route::middleware(['auth'])->prefix('api')->group(function () {
     Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('api.notifications');
