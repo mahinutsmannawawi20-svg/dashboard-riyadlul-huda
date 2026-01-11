@@ -145,10 +145,10 @@ php artisan serve
 
 | Role       | Email                    | Password     |
 | ---------- | ------------------------ | ------------ |
-| Admin      | a\*\*\*@riyadlulhuda.com | **\*\*\*\*** |
-| Pendidikan | p\*\*\*@riyadlulhuda.com | **\*\*\*\*** |
-| Sekretaris | s\*\*\*@riyadlulhuda.com | **\*\*\*\*** |
-| Bendahara  | b\*\*\*@riyadlulhuda.com | **\*\*\*\*** |
+| Admin      | *\*\*\*@******.com | **\*\*\*\*** |
+| Pendidikan | *\*\*\*@******.com | **\*\*\*\*** |
+| Sekretaris | *\*\*\*@******.com | **\*\*\*\*** |
+| Bendahara  |*\*\*\*@******.com | **\*\*\*\*** |
 
 ---
 
