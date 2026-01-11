@@ -1608,13 +1608,20 @@ class PendidikanController extends Controller
                     $tanggal .= ' - ' . date('d M Y', strtotime($validated['tanggal_selesai']));
                  }
 
+                 $icon = (isset($kategoriIcon[$validated['kategori']])) ? $kategoriIcon[$validated['kategori']] : '📅';
+                 $judul = $validated['judul'];
+                 $kategori = $validated['kategori'];
+                 $deskripsi = !empty($validated['deskripsi']) ? "\n📝 Ket: " . $validated['deskripsi'] : "";
+                 
+                 $message = "📌 *{$judul}*\n" .
+                            "{$icon} Kategori: {$kategori}\n" .
+                            "🗓 Tanggal: {$tanggal}" .
+                            $deskripsi;
+
                  $fonnte->notify(
                      $targetWali, 
                      'AGENDA KALENDER AKADEMIK', 
-                     "📌 *{$validated['judul']}*\n" .
-                     "{$kategoriIcon[$validated['kategori']] ?? '📅'} Kategori: {$validated['kategori']}\n" .
-                     "🗓 Tanggal: {$tanggal}\n" .
-                     (!empty($validated['deskripsi']) ? "\n📝 Ket: {$validated['deskripsi']}" : "")
+                     $message
                  );
              }
         } catch (\Exception $e) {
@@ -1637,12 +1644,19 @@ class PendidikanController extends Controller
                 $tanggal .= ' - ' . date('d M Y', strtotime($validated['tanggal_selesai']));
             }
             
+            $icon = $kategoriIcon[$validated['kategori']] ?? '📅';
+            $judul = $validated['judul'];
+            $kategori = $validated['kategori'];
+            $deskripsi = !empty($validated['deskripsi']) ? "\n📝 " . $validated['deskripsi'] : "";
+
+            $message = "📌 {$judul}\n" .
+                       "{$icon} Kategori: {$kategori}\n" .
+                       "📅 Tanggal: {$tanggal}" .
+                       $deskripsi;
+
             $telegram->notify(
                 'AGENDA BARU - KALENDER AKADEMIK',
-                "📌 {$validated['judul']}\n" .
-                "{$kategoriIcon[$validated['kategori']]} Kategori: {$validated['kategori']}\n" .
-                "📅 Tanggal: {$tanggal}" .
-                (!empty($validated['deskripsi']) ? "\n📝 {$validated['deskripsi']}" : ""),
+                $message,
                 '🗓️'
             );
         } catch (\Exception $e) {
