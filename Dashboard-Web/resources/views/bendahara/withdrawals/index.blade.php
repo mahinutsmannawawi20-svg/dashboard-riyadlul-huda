@@ -12,6 +12,13 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px;">
         <!-- Withdrawal Form -->
         <div>
+            <!-- Balance Card -->
+            <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 20px; padding: 24px; color: white; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);">
+                <h4 style="margin: 0; font-size: 0.875rem; font-weight: 500; opacity: 0.9;">Saldo Payment Gateway Available</h4>
+                <h2 style="margin: 8px 0 0 0; font-size: 2rem; font-weight: 800;">Rp {{ number_format($saldoPaymentGateway ?? 0, 0, ',', '.') }}</h2>
+                <p style="margin: 8px 0 0 0; font-size: 0.8rem; opacity: 0.8;">Dana yang tersedia untuk ditarik ke rekening yayasan.</p>
+            </div>
+
             <div style="background: white; border-radius: 20px; padding: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; position: sticky; top: 24px;">
                 <h3 style="font-size: 1.25rem; font-weight: 800; color: #1e2937; margin-bottom: 8px;">Ajukan Penarikan</h3>
                 <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 24px;">Tarik saldo operasional ke rekening bank yang terdaftar.</p>

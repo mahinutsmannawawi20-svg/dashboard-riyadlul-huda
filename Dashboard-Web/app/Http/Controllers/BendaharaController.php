@@ -339,7 +339,20 @@ class BendaharaController extends Controller
     {
         $withdrawals = Withdrawal::where('user_id', Auth::id())->with('bankAccount')->latest()->paginate(15);
         $bankAccounts = BankAccount::where('is_active', true)->get();
-        return view('bendahara.withdrawals.index', compact('withdrawals', 'bankAccounts'));
+
+        // Calculate Payment Gateway Balance (Available for Withdrawal)
+        // 1. Total Income from Gateway (Syahriah via Midtrans)
+        $totalGatewayIncome = Syahriah::where('is_lunas', true)
+            ->where('keterangan', 'like', '%Midtrans%')
+            ->sum('nominal');
+
+        // 2. Total Approved Withdrawals
+        $totalApprovedWithdrawals = Withdrawal::where('status', 'approved')->sum('amount');
+
+        // 3. Balance
+        $saldoPaymentGateway = $totalGatewayIncome - $totalApprovedWithdrawals;
+
+        return view('bendahara.withdrawals.index', compact('withdrawals', 'bankAccounts', 'saldoPaymentGateway'));
     }
 
     public function storeWithdrawal(Request $request)
