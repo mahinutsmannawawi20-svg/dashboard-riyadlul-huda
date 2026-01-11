@@ -8,7 +8,10 @@ use App\Models\Pemasukan;
 use App\Models\Pengeluaran;
 use App\Models\Syahriah;
 use App\Models\Santri;
+use App\Models\BankAccount;
+use App\Models\Withdrawal;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class BendaharaController extends Controller
 {
@@ -16,14 +19,25 @@ class BendaharaController extends Controller
     {
         $today = Carbon::today();
         
-        $totalPemasukan = Pemasukan::sum('jumlah') + Syahriah::sum('jumlah_bayar');
+        $totalPemasukan = Pemasukan::sum('jumlah') + Syahriah::where('is_lunas', true)->sum('nominal');
         $totalPengeluaran = Pengeluaran::sum('jumlah');
         $saldo = $totalPemasukan - $totalPengeluaran;
 
         $pemasukanHariIni = Pemasukan::whereDate('tanggal', $today)->sum('jumlah') + 
-                            Syahriah::whereDate('tanggal_bayar', $today)->sum('jumlah_bayar');
+                            Syahriah::where('is_lunas', true)->whereDate('tanggal_bayar', $today)->sum('nominal');
         
         $pengeluaranHariIni = Pengeluaran::whereDate('tanggal', $today)->sum('jumlah');
+
+        // Split syahriah into manual and gateway
+        $syahriahManual = Syahriah::where('is_lunas', true)
+            ->where(function($q) {
+                $q->whereNull('keterangan')
+                  ->orWhere('keterangan', 'not like', '%Midtrans%');
+            })->sum('nominal');
+
+        $syahriahGateway = Syahriah::where('is_lunas', true)
+            ->where('keterangan', 'like', '%Midtrans%')
+            ->sum('nominal');
 
         return response()->json([
             'status' => 'success',
@@ -32,6 +46,10 @@ class BendaharaController extends Controller
                 'arus_kas_hari_ini' => [
                     'masuk' => $pemasukanHariIni,
                     'keluar' => $pengeluaranHariIni
+                ],
+                'syahriah_summary' => [
+                    'manual' => $syahriahManual,
+                    'gateway' => $syahriahGateway
                 ]
             ]
         ]);
@@ -108,6 +126,67 @@ class BendaharaController extends Controller
             'status' => 'success',
             'message' => 'Catatan keuangan berhasil disimpan',
             'data' => $record
+        ]);
+    }
+
+    // BANK ACCOUNTS
+    public function getBankAccounts()
+    {
+        $accounts = BankAccount::where('is_active', true)->get();
+        return response()->json(['status' => 'success', 'data' => $accounts]);
+    }
+
+    public function storeBankAccount(Request $request)
+    {
+        $request->validate([
+            'bank_name' => 'required|string',
+            'account_number' => 'required|string',
+            'account_holder' => 'required|string',
+        ]);
+
+        $account = BankAccount::create($request->all());
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Rekening berhasil ditambahkan',
+            'data' => $account
+        ]);
+    }
+
+    // WITHDRAWALS
+    public function getWithdrawals()
+    {
+        $withdrawals = Withdrawal::with(['bankAccount'])
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return response()->json(['status' => 'success', 'data' => $withdrawals]);
+    }
+
+    public function requestWithdrawal(Request $request)
+    {
+        $request->validate([
+            'bank_account_id' => 'required|exists:bank_accounts,id',
+            'amount' => 'required|numeric|min:1',
+            'notes' => 'nullable|string',
+        ]);
+
+        // Optional: Check if balance enough (based on saldo currently)
+        // But requested as just a "request" for admin to verify
+
+        $withdrawal = Withdrawal::create([
+            'user_id' => Auth::id(),
+            'bank_account_id' => $request->bank_account_id,
+            'amount' => $request->amount,
+            'notes' => $request->notes,
+            'status' => 'pending'
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Pengajuan penarikan berhasil dikirim',
+            'data' => $withdrawal
         ]);
     }
 }

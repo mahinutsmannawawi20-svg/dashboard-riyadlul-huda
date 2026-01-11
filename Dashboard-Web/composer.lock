@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8be0f0ac7a25863e1f44eabcc6e86bad",
+    "content-hash": "a62f816a7b3a046fe796dcaca0251c1e",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -1283,6 +1283,70 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "hernol/uploadthing-php",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hernol/uploadthing-php.git",
+                "reference": "d930c274b989ffd2b5c3cdd59da07d58b1d2c4cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hernol/uploadthing-php/zipball/d930c274b989ffd2b5c3cdd59da07d58b1d2c4cd",
+                "reference": "d930c274b989ffd2b5c3cdd59da07d58b1d2c4cd",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.0",
+                "php": "^8.1",
+                "psr/http-client": "^1.0",
+                "psr/http-factory": "^1.0",
+                "psr/log": "^1.0|^2.0|^3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "php-http/mock-client": "^1.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.0",
+                "rector/rector": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "UploadThing\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hernol",
+                    "email": "hernol@gmail.com",
+                    "homepage": "https://github.com/hernol/uploadthing-php"
+                }
+            ],
+            "description": "A high-quality PHP client for the UploadThing v6 REST API",
+            "keywords": [
+                "API-Client",
+                "chunked-upload",
+                "file-upload",
+                "multipart",
+                "php",
+                "presigned-urls",
+                "rest-api",
+                "uploadthing",
+                "v6-api",
+                "webhooks"
+            ],
+            "support": {
+                "issues": "https://github.com/hernol/uploadthing-php/issues",
+                "source": "https://github.com/hernol/uploadthing-php/tree/v1.2.1"
+            },
+            "time": "2025-12-15T21:15:21+00:00"
         },
         {
             "name": "laravel/framework",

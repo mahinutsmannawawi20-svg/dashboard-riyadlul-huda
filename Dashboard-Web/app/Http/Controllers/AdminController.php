@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Withdrawal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -117,5 +119,42 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->route('admin.pengaturan')->with('success', 'User berhasil dihapus!');
+    }
+
+    /**
+     * Display all withdrawal requests
+     */
+    public function withdrawals()
+    {
+        $withdrawals = Withdrawal::with(['user', 'bankAccount'])->latest()->paginate(15);
+        return view('admin.withdrawals.index', compact('withdrawals'));
+    }
+
+    /**
+     * Approve or reject a withdrawal request
+     */
+    public function approveWithdrawal(Request $request, $id)
+    {
+        $withdrawal = Withdrawal::findOrFail($id);
+        
+        $validated = $request->validate([
+            'status' => 'required|in:approved,rejected',
+            'notes' => 'nullable|string',
+            'proof_of_transfer' => 'nullable|image|max:2048',
+        ]);
+
+        $withdrawal->status = $validated['status'];
+        $withdrawal->notes = $validated['notes'];
+        $withdrawal->approved_by = Auth::id();
+        $withdrawal->approved_at = now();
+
+        if ($request->hasFile('proof_of_transfer')) {
+            $path = $request->file('proof_of_transfer')->store('proofs', 'public');
+            $withdrawal->proof_of_transfer = $path;
+        }
+
+        $withdrawal->save();
+
+        return redirect()->route('admin.withdrawals')->with('success', 'Status penarikan berhasil diperbarui');
     }
 }

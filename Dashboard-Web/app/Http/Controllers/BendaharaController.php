@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+
+use App\Models\BankAccount;
+use App\Models\Withdrawal;
 use App\Models\Santri;
 use App\Models\Syahriah;
 use App\Models\Pemasukan;
@@ -11,7 +15,6 @@ use App\Models\GajiPegawai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class BendaharaController extends Controller
@@ -44,6 +47,23 @@ class BendaharaController extends Controller
             return $query->sum('nominal');
         });
         
+        $syriahManual = Cache::remember("{$cacheKey}_syahriah_manual", 300, function() use ($tahun, $bulan) {
+            $query = Syahriah::where('tahun', $tahun)->where('is_lunas', true)
+                ->where(function($q) {
+                    $q->whereNull('keterangan')
+                      ->orWhere('keterangan', 'not like', '%Midtrans%');
+                });
+            if ($bulan) $query->where('bulan', $bulan);
+            return $query->sum('nominal');
+        });
+
+        $syahriahGateway = Cache::remember("{$cacheKey}_syahriah_gateway", 300, function() use ($tahun, $bulan) {
+            $query = Syahriah::where('tahun', $tahun)->where('is_lunas', true)
+                ->where('keterangan', 'like', '%Midtrans%');
+            if ($bulan) $query->where('bulan', $bulan);
+            return $query->sum('nominal');
+        });
+
         $syahriahData = Cache::remember("{$cacheKey}_syahriah", 300, function() use ($tahun, $bulan) {
             $query = Syahriah::where('tahun', $tahun);
             if ($bulan) $query->where('bulan', $bulan);
@@ -258,6 +278,7 @@ class BendaharaController extends Controller
         });
         
         return view('bendahara.dashboard', compact(
+            'syriahManual', 'syahriahGateway',
             'saldoDana', 'totalPemasukan', 'totalPengeluaran',
             'totalSantriAktif', 'totalSantriPutra', 'totalSantriPutri',
             'totalSantriPutraLunas', 'totalSantriPutriLunas',
@@ -272,6 +293,76 @@ class BendaharaController extends Controller
             'kelasList', 'asramaList', 'kobongList',
             'tahun', 'bulan', 'kelasId', 'asramaId', 'kobongId', 'gender', 'statusLunas'
         ));
+    }
+
+    // Bank Account Methods
+    public function bankAccounts()
+    {
+        $accounts = BankAccount::latest()->get();
+        return view('bendahara.bank-accounts.index', compact('accounts'));
+    }
+
+    public function storeBankAccount(Request $request)
+    {
+        $validated = $request->validate([
+            'bank_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:255',
+            'account_holder' => 'required|string|max:255',
+        ]);
+
+        BankAccount::create($validated);
+        return redirect()->back()->with('success', 'Rekening bank berhasil ditambahkan');
+    }
+
+    public function updateBankAccount(Request $request, $id)
+    {
+        $account = BankAccount::findOrFail($id);
+        $validated = $request->validate([
+            'bank_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:255',
+            'account_holder' => 'required|string|max:255',
+            'is_active' => 'required|boolean',
+        ]);
+
+        $account->update($validated);
+        return redirect()->back()->with('success', 'Rekening bank berhasil diperbarui');
+    }
+
+    public function destroyBankAccount($id)
+    {
+        BankAccount::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Rekening bank berhasil dihapus');
+    }
+
+    // Withdrawal Methods
+    public function withdrawals()
+    {
+        $withdrawals = Withdrawal::where('user_id', Auth::id())->with('bankAccount')->latest()->paginate(15);
+        $bankAccounts = BankAccount::where('is_active', true)->get();
+        return view('bendahara.withdrawals.index', compact('withdrawals', 'bankAccounts'));
+    }
+
+    public function storeWithdrawal(Request $request)
+    {
+        if ($request->filled('amount')) {
+            $request->merge(['amount' => str_replace('.', '', $request->amount)]);
+        }
+
+        $validated = $request->validate([
+            'bank_account_id' => 'required|exists:bank_accounts,id',
+            'amount' => 'required|numeric|min:1000',
+            'notes' => 'nullable|string',
+        ]);
+
+        Withdrawal::create([
+            'user_id' => Auth::id(),
+            'bank_account_id' => $validated['bank_account_id'],
+            'amount' => $validated['amount'],
+            'notes' => $validated['notes'],
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('bendahara.withdrawals')->with('success', 'Pengajuan penarikan berhasil dikirim');
     }
     
     private function getChartPemasukanPengeluaran($tahun)
@@ -415,7 +506,7 @@ class BendaharaController extends Controller
                     'sisa_tunggakan' => $sisaTunggakan,
                 ]);
             } catch (\Exception $e) {
-                \Log::warning('Telegram notification failed: ' . $e->getMessage());
+                Log::warning('Telegram notification failed: ' . $e->getMessage());
             }
         }
         
@@ -496,7 +587,7 @@ class BendaharaController extends Controller
                 '📥'
             );
         } catch (\Exception $e) {
-            \Log::warning('Telegram notification failed: ' . $e->getMessage());
+            Log::warning('Telegram notification failed: ' . $e->getMessage());
         }
 
         // WA NOTIFICATION (Admin Group)
@@ -510,13 +601,12 @@ class BendaharaController extends Controller
                     $request->kategori_lain ?? $validated['kategori'],
                     str_replace('.', '', $request->nominal), // Raw nominal
                     $validated['tanggal'],
-                    $validated['tanggal'],
                     $validated['keterangan'] ?? '-',
                     Auth::user()->name ?? 'Admin'
                 );
             }
         } catch (\Exception $e) {
-            \Log::warning('WA Notification failed: ' . $e->getMessage());
+            Log::warning('WA Notification failed: ' . $e->getMessage());
         }
         
         return redirect()->route('bendahara.pemasukan')
@@ -602,7 +692,7 @@ class BendaharaController extends Controller
                 '📤'
             );
         } catch (\Exception $e) {
-            \Log::warning('Telegram notification failed: ' . $e->getMessage());
+            Log::warning('Telegram notification failed: ' . $e->getMessage());
         }
 
         // WA NOTIFICATION (Admin Group)
@@ -616,13 +706,12 @@ class BendaharaController extends Controller
                     $request->kategori_lain ?? $validated['kategori'],
                     str_replace('.', '', $request->nominal), // Raw nominal
                     $validated['tanggal'],
-                    $validated['tanggal'],
                     $validated['keterangan'] ?? '-',
                     Auth::user()->name ?? 'Admin'
                 );
             }
         } catch (\Exception $e) {
-            \Log::warning('WA Notification failed: ' . $e->getMessage());
+            Log::warning('WA Notification failed: ' . $e->getMessage());
         }
         
         return redirect()->route('bendahara.pengeluaran')
@@ -772,7 +861,7 @@ class BendaharaController extends Controller
                     '💵'
                 );
             } catch (\Exception $e) {
-                \Log::warning('Telegram notification failed: ' . $e->getMessage());
+                Log::warning('Telegram notification failed: ' . $e->getMessage());
             }
         }
         

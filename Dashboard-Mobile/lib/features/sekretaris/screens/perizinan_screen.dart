@@ -72,6 +72,21 @@ class _PerizinanScreenState extends State<PerizinanScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Typically adding permit requires selecting a santri first
+          // For now, let's navigate to DataSantriScreen to pick a santri
+          // Or if we want a direct shortcut, we need a picker.
+          // Let's go to DataSantriScreen with a 'selection' mode.
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content:
+                    Text('Pilih Santri dari menu Data Santri untuk buat izin')),
+          );
+        },
+        backgroundColor: const Color(0xFF1B5E20),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 
@@ -80,7 +95,7 @@ class _PerizinanScreenState extends State<PerizinanScreen> {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        children: ['Semua', 'Aktif', 'Kembali', 'Terlambat'].map((status) {
+        children: ['Semua', 'Pending', 'Disetujui', 'Ditolak'].map((status) {
           final isSelected = _selectedStatus == status;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -105,8 +120,31 @@ class _PerizinanScreenState extends State<PerizinanScreen> {
     );
   }
 
+  Future<void> _updateStatus(int id, String status) async {
+    try {
+      final response = await _apiService
+          .post('sekretaris/perizinan/$id/approval', data: {'status': status});
+      if (response.data['status'] == 'success') {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Perizinan berhasil $status')),
+          );
+          _fetchPerizinan();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memperbarui status: $e')),
+        );
+      }
+    }
+  }
+
   Widget _buildPerizinanCard(Perizinan izin) {
     Color statusColor;
+    bool showApproval = izin.status.toLowerCase() == 'pending';
+
     switch (izin.status.toLowerCase()) {
       case 'disetujui':
         statusColor = Colors.green;
@@ -195,6 +233,39 @@ class _PerizinanScreenState extends State<PerizinanScreen> {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
+            if (showApproval) ...[
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => _updateStatus(izin.id, 'Ditolak'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: Text('Tolak', style: GoogleFonts.outfit()),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => _updateStatus(izin.id, 'Disetujui'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: Text('Setujui', style: GoogleFonts.outfit()),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

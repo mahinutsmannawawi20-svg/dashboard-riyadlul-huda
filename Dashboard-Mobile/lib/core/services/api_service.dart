@@ -34,6 +34,20 @@ class ApiService {
   }
 
   Future<Response> post(String path, {dynamic data}) async {
-    return await _dio.post(path, data: data);
+    Options? options;
+    if (data is FormData) {
+      options = Options(
+        contentType: 'multipart/form-data',
+      );
+    }
+    return await _dio.post(path, data: data, options: options);
+  }
+
+  Future<Response> put(String path, {dynamic data}) async {
+    return await _dio.put(path, data: data);
+  }
+
+  Future<Response> delete(String path) async {
+    return await _dio.delete(path);
   }
 }

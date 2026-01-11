@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/services/api_service.dart';
 import '../models/santri.dart';
 import 'digital_id_card_screen.dart';
-
 import 'add_perizinan_screen.dart';
+import 'add_edit_santri_screen.dart';
 
 class DataSantriScreen extends StatefulWidget {
   const DataSantriScreen({super.key});
@@ -67,6 +67,48 @@ class _DataSantriScreenState extends State<DataSantriScreen> {
     }
   }
 
+  Future<void> _deactivateSantri(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Konfirmasi',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        content: Text('Apakah Anda yakin ingin menonaktifkan santri ini?',
+            style: GoogleFonts.outfit()),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Ya, Nonaktifkan',
+                style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        final response = await _apiService.delete('sekretaris/santri/$id');
+        if (response.data['status'] == 'success') {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Santri berhasil dinonaktifkan')),
+            );
+            _fetchSantri();
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal: $e')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,9 +161,9 @@ class _DataSantriScreenState extends State<DataSantriScreen> {
                         value: _selectedGender,
                         items: const [
                           DropdownMenuItem(
-                              value: 'L', child: Text('Laki-laki')),
+                              value: 'putra', child: Text('Putra')),
                           DropdownMenuItem(
-                              value: 'P', child: Text('Perempuan')),
+                              value: 'putri', child: Text('Putri')),
                         ],
                         onChanged: (v) {
                           setState(() => _selectedGender = v);
@@ -152,6 +194,18 @@ class _DataSantriScreenState extends State<DataSantriScreen> {
                       ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AddEditSantriScreen()),
+          );
+          if (result == true) _fetchSantri();
+        },
+        backgroundColor: const Color(0xFF1B5E20),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -208,9 +262,33 @@ class _DataSantriScreenState extends State<DataSantriScreen> {
                     fontWeight: FontWeight.bold),
               ),
             ),
-            title: Text(
-              santri.nama,
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    santri.nama,
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined,
+                      size: 20, color: Colors.blue),
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AddEditSantriScreen(santri: santri)),
+                    );
+                    if (result == true) _fetchSantri();
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.person_off_outlined,
+                      size: 20, color: Colors.red),
+                  onPressed: () => _deactivateSantri(santri.id),
+                ),
+              ],
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

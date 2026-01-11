@@ -190,6 +190,16 @@ Route::prefix('bendahara')->middleware(['auth', 'role:bendahara'])->group(functi
     // Billing Blast (WA Tagihan Massal)
     Route::get('/billing/targets', [App\Http\Controllers\BillingController::class, 'getTargets'])->name('bendahara.billing.targets');
     Route::post('/billing/send', [App\Http\Controllers\BillingController::class, 'sendSingleReminder'])->name('bendahara.billing.send');
+
+    // Bank Accounts
+    Route::get('/bank-accounts', [App\Http\Controllers\BendaharaController::class, 'bankAccounts'])->name('bendahara.bank-accounts.index');
+    Route::post('/bank-accounts', [App\Http\Controllers\BendaharaController::class, 'storeBankAccount'])->name('bendahara.bank-accounts.store');
+    Route::put('/bank-accounts/{id}', [App\Http\Controllers\BendaharaController::class, 'updateBankAccount'])->name('bendahara.bank-accounts.update');
+    Route::delete('/bank-accounts/{id}', [App\Http\Controllers\BendaharaController::class, 'destroyBankAccount'])->name('bendahara.bank-accounts.destroy');
+
+    // Withdrawals
+    Route::get('/withdrawals', [App\Http\Controllers\BendaharaController::class, 'withdrawals'])->name('bendahara.withdrawals');
+    Route::post('/withdrawals', [App\Http\Controllers\BendaharaController::class, 'storeWithdrawal'])->name('bendahara.withdrawals.store');
 });
 
 /*
@@ -298,6 +308,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/pengaturan/user', [App\Http\Controllers\AdminController::class, 'createUser'])->name('admin.pengaturan.user.create');
     Route::put('/pengaturan/user/{id}', [App\Http\Controllers\AdminController::class, 'updateUser'])->name('admin.pengaturan.user.update');
     Route::delete('/pengaturan/user/{id}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.pengaturan.user.delete');
+
+    // Withdrawals Tracking
+    Route::get('/withdrawals', [App\Http\Controllers\AdminController::class, 'withdrawals'])->name('admin.withdrawals');
+    Route::post('/withdrawals/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveWithdrawal'])->name('admin.withdrawals.approve');
 });
 
 // Kartu Digital Routes

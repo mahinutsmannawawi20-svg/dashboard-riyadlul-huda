@@ -9,17 +9,41 @@ use App\Models\Perizinan;
 
 class SekretarisController extends Controller
 {
+    public function dashboard()
+    {
+        $totalSantri = Santri::where('is_active', true)->count();
+        $putra = Santri::where('is_active', true)->where('gender', 'putra')->count();
+        $putri = Santri::where('is_active', true)->where('gender', 'putri')->count();
+        $kelas = \App\Models\Kelas::count();
+        $asrama = \App\Models\Asrama::count();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'total_santri' => $totalSantri,
+                'putra' => $putra,
+                'putri' => $putri,
+                'total_kelas' => $kelas,
+                'total_asrama' => $asrama,
+            ]
+        ]);
+    }
+
     public function getFilters()
     {
         $kelas = \App\Models\Kelas::select('id', 'nama_kelas')->get();
+        $asrama = \App\Models\Asrama::select('id', 'nama_asrama')->get();
+        $kobong = \App\Models\Kobong::select('id', 'asrama_id', 'nomor_kobong')->get();
+
         return response()->json([
             'status' => 'success',
             'data' => [
                 'kelas' => $kelas,
-                'asrama' => [], // Placeholder for now
+                'asrama' => $asrama,
+                'kobong' => $kobong,
                 'gender' => [
-                    ['id' => 'L', 'label' => 'Laki-laki'],
-                    ['id' => 'P', 'label' => 'Perempuan'],
+                    ['id' => 'putra', 'label' => 'Putra'],
+                    ['id' => 'putri', 'label' => 'Putri'],
                 ]
             ]
         ]);
@@ -125,6 +149,108 @@ class SekretarisController extends Controller
             'status' => 'success',
             'message' => 'Data perizinan berhasil disimpan',
             'data' => $perizinan
+        ]);
+    }
+    public function storeSantri(Request $request)
+    {
+        $validated = $request->validate([
+            'nis' => 'required|unique:santri,nis',
+            'nama_santri' => 'required|string|max:255',
+            'negara' => 'required|string|max:255',
+            'provinsi' => 'required|string|max:255',
+            'kota_kabupaten' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'desa_kampung' => 'required|string|max:255',
+            'rt_rw' => 'required|string|max:50',
+            'nama_ortu_wali' => 'required|string|max:255',
+            'no_hp_ortu_wali' => 'required|string|max:20',
+            'asrama_id' => 'required|exists:asrama,id',
+            'kobong_id' => 'required|exists:kobong,id',
+            'kelas_id' => 'required|exists:kelas,id',
+            'gender' => 'required|in:putra,putri',
+        ]);
+
+        $santri = Santri::create($validated);
+
+        // Create mutasi record
+        \App\Models\MutasiSantri::create([
+            'santri_id' => $santri->id,
+            'jenis_mutasi' => 'masuk',
+            'tanggal_mutasi' => now(),
+            'keterangan' => 'Pendaftaran via Mobile',
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data santri berhasil ditambahkan',
+            'data' => $santri
+        ]);
+    }
+
+    public function updateSantri(Request $request, $id)
+    {
+        $santri = Santri::findOrFail($id);
+
+        $validated = $request->validate([
+            'nis' => 'required|unique:santri,nis,' . $id,
+            'nama_santri' => 'required|string|max:255',
+            'negara' => 'required|string|max:255',
+            'provinsi' => 'required|string|max:255',
+            'kota_kabupaten' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'desa_kampung' => 'required|string|max:255',
+            'rt_rw' => 'required|string|max:50',
+            'nama_ortu_wali' => 'required|string|max:255',
+            'no_hp_ortu_wali' => 'required|string|max:20',
+            'asrama_id' => 'required|exists:asrama,id',
+            'kobong_id' => 'required|exists:kobong,id',
+            'kelas_id' => 'required|exists:kelas,id',
+            'gender' => 'required|in:putra,putri',
+        ]);
+
+        $santri->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data santri berhasil diperbarui',
+            'data' => $santri
+        ]);
+    }
+
+    public function deactivateSantri($id)
+    {
+        $santri = Santri::findOrFail($id);
+        $santri->update(['is_active' => false]);
+
+        // Create mutasi record
+        \App\Models\MutasiSantri::create([
+            'santri_id' => $id,
+            'jenis_mutasi' => 'keluar',
+            'tanggal_mutasi' => now(),
+            'keterangan' => 'Dinonaktifkan via Mobile',
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Santri berhasil dinonaktifkan'
+        ]);
+    }
+
+    public function approvePerizinan(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:Disetujui,Ditolak'
+        ]);
+
+        $perizinan = Perizinan::findOrFail($id);
+        $perizinan->update([
+            'status' => $request->status,
+            'approved_by' => \Illuminate\Support\Facades\Auth::id()
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Perizinan berhasil " . strtolower($request->status)
         ]);
     }
 }

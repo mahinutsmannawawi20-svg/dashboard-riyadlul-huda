@@ -424,17 +424,33 @@
             </div>
         </div>
 
-        <!-- Total Pembayaran Syahriah -->
-        <div style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); border-radius: 16px; padding: 16px; box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2); transition: transform 0.3s ease; position: relative; overflow: hidden; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';" onclick="window.location.href='{{ route('bendahara.syahriah') }}'">
+        <!-- Syahriah Manual -->
+        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; padding: 16px; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15); transition: transform 0.3s ease; position: relative; overflow: hidden; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';" onclick="window.location.href='{{ route('bendahara.syahriah') }}'">
             <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
             <div style="display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1;">
                 <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3);">
                     <i data-feather="dollar-sign" style="width: 18px; height: 18px; color: white;"></i>
                 </div>
                 <div>
-                    <p style="font-size: 10px; color: rgba(255,255,255,0.9); font-weight: 700; margin-bottom: 2px; text-transform: uppercase;">Tagihan Syahriah</p>
+                    <p style="font-size: 10px; color: rgba(255,255,255,0.9); font-weight: 700; margin-bottom: 2px; text-transform: uppercase;">Syahriah Manual</p>
                     <h3 style="font-size: 1.1rem; font-weight: 800; color: white; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        Rp {{ number_format($totalSyahriah, 0, ',', '.') }}
+                        Rp {{ number_format($syriahManual, 0, ',', '.') }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Syahriah Gateway -->
+        <div style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); border-radius: 16px; padding: 16px; box-shadow: 0 10px 20px rgba(14, 165, 233, 0.15); transition: transform 0.3s ease; position: relative; overflow: hidden; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';" onclick="window.location.href='{{ route('bendahara.syahriah') }}'">
+            <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+            <div style="display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1;">
+                <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3);">
+                    <i data-feather="credit-card" style="width: 18px; height: 18px; color: white;"></i>
+                </div>
+                <div>
+                    <p style="font-size: 10px; color: rgba(255,255,255,0.9); font-weight: 700; margin-bottom: 2px; text-transform: uppercase;">Syahriah Gateway</p>
+                    <h3 style="font-size: 1.1rem; font-weight: 800; color: white; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        Rp {{ number_format($syahriahGateway, 0, ',', '.') }}
                     </h3>
                 </div>
             </div>
@@ -561,6 +577,18 @@
                     <i data-feather="credit-card" style="width: 20px; height: 20px;"></i>
                 </div>
                 <span>Bayar Gaji</span>
+            </a>
+            <a href="{{ route('bendahara.withdrawals') }}" style="background: linear-gradient(135deg, #64748b 0%, #334155 100%); color: white; padding: 16px; border-radius: 14px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(100, 116, 139, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(100, 116, 139, 0.2)';">
+                <div style="background: rgba(255,255,255,0.2); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i data-feather="external-link" style="width: 20px; height: 20px;"></i>
+                </div>
+                <span>Penarikan Dana</span>
+            </a>
+            <a href="{{ route('bendahara.bank-accounts.index') }}" style="background: linear-gradient(135deg, #475569 0%, #1e293b 100%); color: white; padding: 16px; border-radius: 14px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(71, 85, 105, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(71, 85, 105, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(71, 85, 105, 0.2)';">
+                <div style="background: rgba(255,255,255,0.2); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i data-feather="settings" style="width: 20px; height: 20px;"></i>
+                </div>
+                <span>Kelola Rekening</span>
             </a>
         </div>
     </div>

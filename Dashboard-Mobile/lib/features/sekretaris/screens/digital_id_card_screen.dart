@@ -13,7 +13,7 @@ class DigitalIdCardScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
       appBar: AppBar(
-        title: Text('Kartu Digital',
+        title: Text('Kartu Syahriah & Identitas',
             style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -50,6 +50,12 @@ class DigitalIdCardScreen extends StatelessWidget {
   }
 
   Widget _buildIdCard() {
+    String formattedVA = santri.virtualAccountNumber ?? '-';
+    if (formattedVA.length == 16) {
+      formattedVA = formattedVA.replaceAllMapped(
+          RegExp(r".{4}"), (match) => "${match.group(0)} ");
+    }
+
     return Container(
       width: double.infinity,
       constraints: const BoxConstraints(maxWidth: 350),
@@ -76,8 +82,8 @@ class DigitalIdCardScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Replace with actual logo if available
-                const Icon(Icons.school, color: Colors.white, size: 32),
+                const Icon(Icons.account_balance_wallet,
+                    color: Colors.white, size: 32),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -92,7 +98,7 @@ class DigitalIdCardScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'KARTU IDENTITAS SANTRI',
+                        'KARTU SYAHRIAH & IDENTITAS',
                         style: GoogleFonts.outfit(
                           color: Colors.white70,
                           fontSize: 10,
@@ -112,16 +118,16 @@ class DigitalIdCardScreen extends StatelessWidget {
               children: [
                 // Profile Photo
                 CircleAvatar(
-                  radius: 50,
+                  radius: 45,
                   backgroundColor: Colors.grey.shade100,
                   child: santri.fotoPath.isNotEmpty
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
+                          borderRadius: BorderRadius.circular(45),
                           child: Image.network(santri.fotoPath,
-                              fit: BoxFit.cover, width: 100, height: 100),
+                              fit: BoxFit.cover, width: 90, height: 90),
                         )
                       : Icon(Icons.person,
-                          size: 50, color: Colors.grey.shade400),
+                          size: 45, color: Colors.grey.shade400),
                 ),
                 const SizedBox(height: 16),
 
@@ -130,25 +136,59 @@ class DigitalIdCardScreen extends StatelessWidget {
                   santri.nama.toUpperCase(),
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF1F2937),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
 
                 // NIS
                 Text(
                   'NIS: ${santri.nis}',
                   style: GoogleFonts.outfit(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: Colors.grey.shade600,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
 
+                const SizedBox(height: 20),
+                // Virtual Account Section
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1B5E20).withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: const Color(0xFF1B5E20).withOpacity(0.1)),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'VIRTUAL ACCOUNT (BSI)',
+                        style: GoogleFonts.outfit(
+                          fontSize: 10,
+                          color: const Color(0xFF1B5E20),
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        formattedVA,
+                        style: GoogleFonts.outfit(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1B5E20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: Divider(),
                 ),
 
@@ -161,13 +201,13 @@ class DigitalIdCardScreen extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
 
                 // QR Code
                 QrImageView(
                   data: 'santri:${santri.nis}',
                   version: QrVersions.auto,
-                  size: 140.0,
+                  size: 110.0,
                   eyeStyle: const QrEyeStyle(
                     eyeShape: QrEyeShape.square,
                     color: Color(0xFF1B5E20),
@@ -178,11 +218,11 @@ class DigitalIdCardScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   'SCAN UNTUK VERIFIKASI',
                   style: GoogleFonts.outfit(
-                    fontSize: 10,
+                    fontSize: 9,
                     color: Colors.grey.shade400,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
@@ -232,7 +272,7 @@ class DigitalIdCardScreen extends StatelessWidget {
         Text(
           value,
           style: GoogleFonts.outfit(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.bold,
             color: const Color(0xFF374151),
           ),

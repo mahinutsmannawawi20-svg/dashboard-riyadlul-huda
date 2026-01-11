@@ -42,6 +42,7 @@ dependencies:
   intl: ^0.18.1 # Downgraded for compatibility
   device_preview: ^1.1.0 # For simulator frame
   qr_flutter: ^4.1.0
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:
