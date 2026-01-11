@@ -123,6 +123,11 @@ Route::prefix('sekretaris')->middleware(['auth', 'role:sekretaris'])->group(func
 
     // Perizinan Santri
     Route::get('/perizinan', [App\Http\Controllers\PerizinanController::class, 'index'])->name('sekretaris.perizinan.index');
+    Route::get('/perizinan/create', [App\Http\Controllers\PerizinanController::class, 'create'])->name('sekretaris.perizinan.create');
+    Route::post('/perizinan', [App\Http\Controllers\PerizinanController::class, 'store'])->name('sekretaris.perizinan.store');
+    Route::get('/perizinan/{id}/edit', [App\Http\Controllers\PerizinanController::class, 'edit'])->name('sekretaris.perizinan.edit');
+    Route::put('/perizinan/{id}', [App\Http\Controllers\PerizinanController::class, 'update'])->name('sekretaris.perizinan.update');
+    Route::delete('/perizinan/{id}', [App\Http\Controllers\PerizinanController::class, 'destroy'])->name('sekretaris.perizinan.destroy');
     Route::post('/perizinan/{id}/approval', [App\Http\Controllers\PerizinanController::class, 'approval'])->name('sekretaris.perizinan.approval');
 });
 

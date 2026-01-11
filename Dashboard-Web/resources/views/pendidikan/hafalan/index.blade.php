@@ -241,39 +241,55 @@
     </div>
 </div>
 
-<!-- Kitab Talaran Edit Modal -->
-<div class="modal fade" id="kitabModal" tabindex="-1" role="dialog" aria-labelledby="kitabModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="kitabModalLabel">📚 Edit Kitab Talaran</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+<!-- Kitab Talaran Edit Modal (Custom Overlay) -->
+<div id="kitabModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: white; width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); overflow: hidden; animation: slideIn 0.2s ease-out;">
+        <div style="background: linear-gradient(to right, #4caf50, #388e3c); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;">
+            <h5 style="color: white; font-weight: 700; margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-book-open"></i> Edit Kitab Talaran
+            </h5>
+            <button type="button" onclick="closeKitabModal()" style="background: none; border: none; color: white; font-size: 1.5rem; line-height: 1; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                &times;
+            </button>
+        </div>
+        
+        <form id="kitabForm" style="margin: 0;">
+            <div style="padding: 24px;">
+                <input type="hidden" id="kitabKelasId" value="">
+                <input type="hidden" id="kitabSemester" value="">
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 8px;">Semester</label>
+                    <span id="kitabSemesterLabel" style="display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;"></span>
+                </div>
+                
+                <div style="margin-bottom: 8px;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 8px;">Nama Kitab Talaran</label>
+                    <input type="text" id="kitabNamaInput" placeholder="Contoh: Jurumiyah, Alfiyah, dll" required
+                           style="width: 100%; height: 42px; border: 1px solid #d1d5db; border-radius: 8px; padding: 0 12px; font-size: 0.95rem; color: #1f2937; transition: border-color 0.2s; outline: none;"
+                           onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 0 3px rgba(76, 175, 80, 0.1)';"
+                           onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';">
+                </div>
+            </div>
+            
+            <div style="padding: 16px 24px; background: #f9fafb; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" onclick="closeKitabModal()" style="padding: 8px 16px; background: white; border: 1px solid #d1d5db; color: #4b5563; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">
+                    Batal
+                </button>
+                <button type="submit" style="padding: 8px 16px; background: #4caf50; border: none; color: white; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;" onmouseover="this.style.background='#43a047'" onmouseout="this.style.background='#4caf50'">
+                    <i class="fas fa-save"></i> Simpan
                 </button>
             </div>
-            <form id="kitabForm">
-                <div class="modal-body">
-                    <input type="hidden" id="kitabKelasId" value="">
-                    <input type="hidden" id="kitabSemester" value="">
-                    
-                    <div class="form-group">
-                        <label class="font-weight-bold text-secondary">Semester</label><br>
-                        <span id="kitabSemesterLabel" class="badge badge-primary p-2"></span>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="font-weight-bold text-secondary">Nama Kitab Talaran</label>
-                        <input type="text" id="kitabNamaInput" class="form-control" placeholder="Contoh: Jurumiyah, Alfiyah, dll" required autofocus>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
 </div>
+
+<style>
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 
 @endsection
 
@@ -288,19 +304,45 @@
         
         // Set semester label
         const semesterName = semester == 1 ? 'Ganjil' : 'Genap';
-        const semesterColor = semester == 1 ? 'badge-info' : 'badge-warning';
         const labelEl = document.getElementById('kitabSemesterLabel');
         labelEl.textContent = 'Semester ' + semester + ' (' + semesterName + ')';
-        labelEl.className = 'badge p-2 ' + semesterColor;
         
-        // Show modal using Bootstrap jQuery
-        $('#kitabModal').modal('show');
+        // Style label based on semester
+        if (semester == 1) {
+            labelEl.style.background = '#e0f2fe';
+            labelEl.style.color = '#0369a1';
+        } else {
+            labelEl.style.background = '#fef3c7';
+            labelEl.style.color = '#b45309';
+        }
+        
+        // Show overlay
+        const modal = document.getElementById('kitabModal');
+        modal.style.display = 'flex';
         
         // Focus input
         setTimeout(() => {
             document.getElementById('kitabNamaInput').focus();
-        }, 500);
+        }, 100);
     }
+    
+    function closeKitabModal() {
+        document.getElementById('kitabModal').style.display = 'none';
+    }
+    
+    // Close on click outside
+    document.getElementById('kitabModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeKitabModal();
+        }
+    });
+
+    // Handle Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('kitabModal').style.display === 'flex') {
+            closeKitabModal();
+        }
+    });
     
     // Form submit handler
     document.getElementById('kitabForm').addEventListener('submit', function(e) {
@@ -338,13 +380,16 @@
         })
         .then(data => {
             // Update DOM directly without reloading
-            const displaySpan = document.getElementById('kitab-display-' + kelasId + '-' + semester);
+            const displaySpan = document.getElementById('kitab-display-' + kelasId + '-' + semester); // Using the same ID
             if (displaySpan) {
                 displaySpan.textContent = namaKitab;
                 displaySpan.classList.remove('text-muted');
                 displaySpan.classList.add('font-weight-bold', 'text-dark');
+                // Updating style directly since we might have removed bootstrap classes from the span in previous steps or user might not have them
+                displaySpan.style.color = '#1f2937';
+                displaySpan.style.fontWeight = '700';
             }
-            $('#kitabModal').modal('hide');
+            closeKitabModal();
             
             // Show success alert
             alert('Kitab berhasil disimpan!');

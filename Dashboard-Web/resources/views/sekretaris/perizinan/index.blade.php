@@ -64,6 +64,9 @@
                 
                 <!-- Buttons -->
                 <div style="display: flex; gap: 8px;">
+                    <a href="{{ route('sekretaris.perizinan.create') }}" style="height: 38px; padding: 0 16px; background: #10b981; color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; text-decoration: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                        <i class="fas fa-plus"></i> Buat Izin
+                    </a>
                     <button type="submit" style="height: 38px; padding: 0 16px; background: #1e40af; color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                         <i class="fas fa-search"></i> Filter
                     </button>
@@ -129,6 +132,14 @@
                         </td>
                         <td style="padding: 12px 16px;">
                             <div style="display: flex; gap: 6px;">
+                                <a href="{{ route('sekretaris.perizinan.edit', $item->id) }}"
+                                   style="padding: 6px 10px; background: #fff; border: 1px solid #f59e0b; color: #f59e0b; border-radius: 6px; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;"
+                                   title="Edit"
+                                   onmouseover="this.style.background='#fef3c7';"
+                                   onmouseout="this.style.background='#fff';">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
                                 @if($item->status == 'Pending')
                                 <form action="{{ route('sekretaris.perizinan.approval', $item->id) }}" method="POST">
                                     @csrf
@@ -145,9 +156,9 @@
                                     @csrf
                                     <input type="hidden" name="status" value="Ditolak">
                                     <button type="submit" 
-                                        style="padding: 6px 10px; background: #fff; border: 1px solid #f59e0b; color: #f59e0b; border-radius: 6px; transition: all 0.2s;"
+                                        style="padding: 6px 10px; background: #fff; border: 1px solid #dc2626; color: #dc2626; border-radius: 6px; transition: all 0.2s;"
                                         title="Tolak"
-                                        onmouseover="this.style.background='#fef3c7';"
+                                        onmouseover="this.style.background='#fee2e2';"
                                         onmouseout="this.style.background='#fff';">
                                         <i class="fas fa-times"></i>
                                     </button>
